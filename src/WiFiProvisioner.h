@@ -7,9 +7,11 @@
 class WebServer;
 class DNSServer;
 
-class WiFiProvisioner {
+class WiFiProvisioner
+{
 public:
-  struct Config {
+  struct Config
+  {
     const char *AP_NAME;                 // Access Point Name
     const char *HTML_TITLE;              // Page Title
     const char *THEME_COLOR;             // Theme color for the page

@@ -19,27 +19,34 @@ WiFiProvisioner provisioner(
 Preferences preferences;
 
 // Function to connect to Wi-Fi using stored credentials
-bool connectToWiFi() {
+bool connectToWiFi()
+{
   preferences.begin("wifi-provision", true);
   String savedSSID = preferences.getString("ssid", "");
   String savedPassword = preferences.getString("password", "");
   preferences.end();
 
-  if (savedSSID.isEmpty()) {
+  if (savedSSID.isEmpty())
+  {
     Serial.println("No saved Wi-Fi credentials found.");
     return false;
   }
 
   Serial.printf("Connecting to saved Wi-Fi: %s\n", savedSSID.c_str());
-  if (savedPassword.isEmpty()) {
+  if (savedPassword.isEmpty())
+  {
     WiFi.begin(savedSSID.c_str());
-  } else {
+  }
+  else
+  {
     WiFi.begin(savedSSID.c_str(), savedPassword.c_str());
   }
 
   unsigned long startTime = millis();
-  while (WiFi.status() != WL_CONNECTED) {
-    if (millis() - startTime > 10000) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    if (millis() - startTime > 10000)
+    {
       Serial.println("Failed to connect to saved Wi-Fi.");
       return false;
     }
@@ -50,14 +57,16 @@ bool connectToWiFi() {
   return true;
 }
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
 
   pinMode(buttonPin, INPUT_PULLUP);
 
   // Set callbacks
   provisioner
-      .onProvision([]() {
+      .onProvision([]()
+                   {
         preferences.begin("wifi-provision", true);
         String savedAPIKey = preferences.getString("apikey", "");
         if (!savedAPIKey.isEmpty()) {
@@ -67,19 +76,19 @@ void setup() {
           provisioner.getConfig().SHOW_INPUT_FIELD = true;
           Serial.println("No API key found. Input field shown.");
         }
-        preferences.end();
-      })
-      .onInputCheck([](const char *input) -> bool {
+        preferences.end(); })
+      .onInputCheck([](const char *input) -> bool
+                    {
         Serial.printf("Validating API Key: %s\n", input);
-        return strlen(input) == 8;
-      })
-      .onFactoryReset([]() {
+        return strlen(input) == 8; })
+      .onFactoryReset([]()
+                      {
         preferences.begin("wifi-provision", false);
         Serial.println("Factory reset triggered! Clearing preferences...");
         preferences.clear(); // Clear all stored credentials and API key
-        preferences.end();
-      })
-      .onSuccess([](const char *ssid, const char *password, const char *input) {
+        preferences.end(); })
+      .onSuccess([](const char *ssid, const char *password, const char *input)
+                 {
         Serial.printf("Provisioning successful! SSID: %s\n", ssid);
         preferences.begin("wifi-provision", false);
         // Store the credentials and API key in preferences
@@ -91,21 +100,23 @@ void setup() {
           preferences.putString("apikey", String(input));
         }
         preferences.end();
-        Serial.println("Credentials and API key saved.");
-      });
+        Serial.println("Credentials and API key saved."); });
 
-  if (!connectToWiFi()) {
+  if (!connectToWiFi())
+  {
     // Start the provisioning process
     provisioner.startProvisioning();
   }
 }
 
-void loop() {
+void loop()
+{
   // Read the state of the button
   int buttonState = digitalRead(buttonPin);
 
   // If the button is pressed start provisioning
-  if (buttonState == LOW) {
+  if (buttonState == LOW)
+  {
     Serial.println("Button pressed. Starting provisioning...");
     provisioner.startProvisioning();
   }
